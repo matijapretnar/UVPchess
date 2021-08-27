@@ -157,7 +157,7 @@ class GameState():
             for i in range(1, 8):
                 endRow = startRow + d[0] * i
                 endCol = startCol + d[1] * i
-                if 0 <= endRow < 7 and 0 <= endCol < 7:
+                if 0 <= endRow <= 7 and 0 <= endCol <= 7:
                     endPiece = self.board[endRow][endCol]
                     if endPiece[0] == allyColor and endPiece[1] != "K":
                         if possiblePin == (): # 1st piece could be pinned
