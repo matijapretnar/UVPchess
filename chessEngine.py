@@ -43,7 +43,7 @@ class GameState():
         lines.append(lttrs)
         return "\n".join(lines)
 
-    def makeMove(self, move):
+    def makeMove(self, move: list[tuple, tuple, list]) -> None:
         """Make a move that is passed as a parameter"""
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -54,7 +54,7 @@ class GameState():
         elif move.pieceMoved == "bK":
             self.blackKingLocation = (move.endRow, move.endCol)
 
-    def undoMove(self):
+    def undoMove(self) -> None:
         """undo last move"""
         if len(self.moveLog) != 0: # move to undo
             move = self.moveLog.pop()
@@ -66,7 +66,7 @@ class GameState():
             if move.pieceMoved == "bK":
                 self.blackKingLocation = (move.startRow, move.startCol)
 
-    def getValidMoves(self):
+    def getValidMoves(self) -> list:
         """All moves considering checks"""
         moves = []
         self.inCheck, self.pins, self.checks = self.checkForPinsAndChecks()
@@ -113,7 +113,7 @@ class GameState():
         else:
             return self.squareUnderAttack(self.blackKingLocation[0], self.blackKingLocation[1])
     
-    def squareUnderAttack(self, r, c):
+    def squareUnderAttack(self, r: int, c: int) -> bool:
         """Determines if the enemy is attacking square (r, c)"""
         self.whiteToMove = not self.whiteToMove # switch to opponent
         oppMoves = self.getAllPossibleMoves()
@@ -123,7 +123,7 @@ class GameState():
                 return True
         return False       
 
-    def getAllPossibleMoves(self):
+    def getAllPossibleMoves(self) -> list:
         """All moves without considering checks"""
         moves = []
         for r in range(len(self.board)):
@@ -134,7 +134,7 @@ class GameState():
                     self.moveFunctions[piece](r, c, moves) # calls appropriate move function based on piece type
         return moves
 
-    def checkForPinsAndChecks(self):
+    def checkForPinsAndChecks(self) -> tuple[bool, list, tuple]:
         """Returns if the king is in check, a list of pins and a list of checks"""
         pins = [] # square with allied piece and direction pinning
         checks = [] # squares enemy is applying a check
@@ -194,7 +194,7 @@ class GameState():
                     checks.append((endRow, endCol, m[0], m[1]))
         return inCheck, pins, checks
 
-    def getPawnMoves(self, r, c, moves):
+    def getPawnMoves(self, r: int, c: int, moves: list) -> None:
         """Get pawn moves starting at r,c and appending moves to the list 'moves'"""
         piecePinned = False
         pinDirection = ()
@@ -237,7 +237,7 @@ class GameState():
                         moves.append(Move((r, c), (r + 1, c + 1), self.board))
         # TODO: pawn promotion
 
-    def getRookMoves(self, r, c, moves):
+    def getRookMoves(self, r: int, c: int, moves: list) -> None:
         """Get rook moves starting at r,c and appending moves to list 'moves'"""
         piecePinned = False
         pinDirection = ()
@@ -268,7 +268,7 @@ class GameState():
                 else: # off board
                     break
 
-    def getKnightMoves(self, r, c, moves):
+    def getKnightMoves(self, r: int, c: int, moves: list) -> None:
         """Get knight moves starting at r,c and appends to list 'moves'"""
         piecePinned = False
         for i in range(len(self.pins) - 1, -1, -1):
@@ -288,7 +288,7 @@ class GameState():
                     if endPiece[0] != allyColor: #not an ally piece (enemy or empty)
                         moves.append(Move((r, c), (endRow, endCol), self.board))
 
-    def getBishopMoves(self, r, c, moves):
+    def getBishopMoves(self, r: int, c: int, moves: list) -> None:
         """Get bishop moves at r,c and appends to list 'moves'"""
         piecePinned = False
         pinDirection = ()
@@ -318,7 +318,7 @@ class GameState():
                 else: # off board
                     break
 
-    def getQueenMoves(self, r, c, moves):
+    def getQueenMoves(self, r: int, c: int, moves: list) -> None:
         """Gets queen moves at r,c and appends to list 'moves'"""
         self.getRookMoves(r, c, moves)
         self.getBishopMoves(r, c, moves)
@@ -358,7 +358,7 @@ class Move:
             "e": 4, "f": 5, "g": 6, "h": 7}
     colsToFiles = {v: k for k, v in filesToCols.items()}
 
-    def __init__(self, startSq, endSq, board):
+    def __init__(self, startSq: tuple, endSq: tuple, board: list) -> None:
         self.startRow = startSq[0]
         self.startCol = startSq[1]
         self.endRow = endSq[0]
@@ -375,5 +375,5 @@ class Move:
     def getChessNotation(self):
         return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)
 
-    def getRankFile(self, r, c):
+    def getRankFile(self, r: int, c: int):
         return self.colsToFiles[c] + self.rowsToRanks[r]
